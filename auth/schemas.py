@@ -38,3 +38,7 @@ class LogFilesResponse(BaseModel):
     message: str
     result: bool
     data: List[LogFile]
+    
+class BlockRequest(BaseModel):
+    blocked_ips: List[str]
+    blocked_domains: List[str]

@@ -33,8 +33,8 @@ def get_user_role_channels(db: Session = Depends(get_db)):
                 row_dict = dict(row._mapping)
 
                 # Convert datetime fields to ISO strings
-                if isinstance(row_dict.get("created_at"), datetime):
-                    row_dict["created_at"] = row_dict["created_at"].strftime("%Y-%m-%d %H:%M:%S")
+                if isinstance(row_dict["created_at"], datetime):
+                    row_dict["created_at"] = row_dict["created_at"].isoformat()
 
                 userList.append(row_dict)
 

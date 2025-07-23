@@ -10,6 +10,10 @@ class StatusEnum(enum.Enum):
     inactive = "inactive"
     pending = "pending"
 
+class BlockTypeEnum(str, enum.Enum):
+    ip = "ip"
+    domain = "domain"
+
 class User(Base):
     __tablename__ = 'users'
 
@@ -115,3 +119,14 @@ class APIRoute(Base):
 
     def __repr__(self):
         return f"<APIRoute(id={self.id}, method={self.method}, path={self.path})>"
+
+class BlocklistEntry(Base):
+    __tablename__ = "blocklist"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    type = Column(Enum(BlockTypeEnum), nullable=False)  # "ip" or "domain"
+    value = Column(String(255), unique=True, nullable=False)
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+
+    def __repr__(self):
+        return f"<BlocklistEntry(id={self.id}, type={self.type}, value={self.value})>"

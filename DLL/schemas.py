@@ -83,3 +83,12 @@ class RoutepathResponse(ApiRoutePathBase):
     
     class Config:
         from_attributes = True
+
+class ShowBlockedResponse(BaseModel):
+    id: int
+    type: str
+    value: str
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True

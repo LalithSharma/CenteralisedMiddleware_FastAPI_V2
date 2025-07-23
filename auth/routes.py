@@ -1,14 +1,17 @@
 from datetime import datetime
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy import Select
 from sqlalchemy.orm import Session
 
+from DLL.schemas import ShowBlockedResponse
 from auth.middleware import admin_only
 from logger import log_error, log_info
 from .dependencies import get_channel_by_name, get_db, authenticate_user, create_access_token, get_user, get_user_channel, get_user_role
 from .models import Token
-from .schemas import UserCreate, UserResponse
-from users.models import Channel, Role, User, UserAPI, UserChannel, UserRole
+from .schemas import BlockRequest, UserCreate, UserResponse
+from users.models import BlocklistEntry, Channel, Role, User, UserAPI, UserChannel, UserRole
 from .utils import get_password_hash
 
 router = APIRouter()
@@ -103,3 +106,42 @@ def signup(request: Request, user: UserCreate, db: Session = Depends(get_db)):
     
     return db_user
 
+@router.post("/blocklist")
+async def update_blocklist(data: BlockRequest, db: Session = Depends(get_db)):
+    # Store blocked IPs
+    for ip in data.blocked_ips:
+        if not db.query(BlocklistEntry).filter_by(value=ip, type="ip").first():
+            entry = BlocklistEntry(type="ip", value=ip)
+            db.add(entry)
+
+    # Store blocked Domains
+    for domain in data.blocked_domains:
+        if not db.query(BlocklistEntry).filter_by(value=domain, type="domain").first():
+            entry = BlocklistEntry(type="domain", value=domain)
+            db.add(entry)
+
+    db.commit()
+
+    return {"message": "Blocklist updated successfully"}
+
+@router.get("/showblocked")
+async def get_blocklist(db: Session = Depends(get_db)):
+    try:
+        print("entered to blocked area")
+        blocked = db.query(BlocklistEntry).all()
+        result = [ShowBlockedResponse.model_validate(ch).model_dump() for ch in blocked]
+        print("shows blocked list", result)
+        return {
+            "message": "Blocked List retrieved successfully",
+            "result": True,
+            "data": result
+        }
+    except Exception as e:
+        # Log the error if you want
+        print("Error fetching block list:", e)
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+    
+# async def get_blocklist(query: Select, db: Session = Depends(get_db)) -> Optional[dict]:
+#     result = db.execute(query).fetchone()
+#     return dict(result._mapping) if result else None

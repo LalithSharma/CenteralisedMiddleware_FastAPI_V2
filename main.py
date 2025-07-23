@@ -26,6 +26,7 @@ ApiGateway_Middleware(app)
 templates = Jinja2Templates(directory="users/templates")
 #app.mount("/static/logs", StaticFiles(directory="users/static"), name="logs")
 
+
 @app.on_event("startup")
 async def startup_event():
     with Session(engine) as session:
