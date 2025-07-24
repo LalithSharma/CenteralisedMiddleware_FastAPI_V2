@@ -121,16 +121,13 @@ async def update_blocklist(data: BlockRequest, db: Session = Depends(get_db)):
             db.add(entry)
 
     db.commit()
-
     return {"message": "Blocklist updated successfully"}
 
 @router.get("/showblocked")
 async def get_blocklist(db: Session = Depends(get_db)):
     try:
-        print("entered to blocked area")
         blocked = db.query(BlocklistEntry).all()
         result = [ShowBlockedResponse.model_validate(ch).model_dump() for ch in blocked]
-        print("shows blocked list", result)
         return {
             "message": "Blocked List retrieved successfully",
             "result": True,

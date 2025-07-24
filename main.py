@@ -1,3 +1,4 @@
+import asyncio
 import os
 from fastapi import Depends, FastAPI, Form, HTTPException, Request
 from fastapi.responses import RedirectResponse
@@ -5,7 +6,10 @@ from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 import httpx
 from redis import Redis
+from auth.blocklist_updater import refresh_blocklist_periodically
 from auth.dependencies import authenticate_user, get_db, get_user_role, validate_token
+from auth.domain_blocker import DomainBlockMiddleware
+from auth.ip_blocker import IPBlockMiddleware
 from auth.middleware import ApiGateway_Middleware
 from auth.routes import router as auth_router
 from sqlalchemy.orm import Session
@@ -23,6 +27,12 @@ from logs.routes import router as log_router
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 ApiGateway_Middleware(app)
+# IP blocker middleware
+app.add_middleware(IPBlockMiddleware)
+
+# Domain blocker middleware (after IP so it checks second)
+app.add_middleware(DomainBlockMiddleware)
+
 templates = Jinja2Templates(directory="users/templates")
 #app.mount("/static/logs", StaticFiles(directory="users/static"), name="logs")
 
@@ -40,6 +50,7 @@ async def startup_event():
     global redis_client
     redis_url = os.getenv("REDIS_URL")
     redis_client = Redis.from_url(redis_url, decode_responses=True)
+    asyncio.create_task(refresh_blocklist_periodically(interval=60))
 
 @app.on_event("shutdown")
 async def shutdown_event():

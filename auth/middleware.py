@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 import logging
 from logging.handlers import RotatingFileHandler
@@ -9,10 +10,9 @@ from fastapi.responses import JSONResponse
 from auth.dependencies import validate_token
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-
 #from auth.routes import get_blocklist
+
 from logger import log_error, log_info
-#from users.models import BlockTypeEnum, BlocklistEntry
 
 logger = logging.getLogger('uvicorn.access')
 logger.disabled = False
@@ -36,6 +36,7 @@ def ApiGateway_Middleware(app:FastAPI):
     logger.addHandler(log_handler)
     
     @app.middleware('http')
+
     async def custom_logging(request: Request, call_next):
         if request.url.path.startswith("/logs/apilogs/"):
             return await call_next(request)
@@ -115,11 +116,11 @@ def ApiGateway_Middleware(app:FastAPI):
             return JSONResponse(
                 status_code=500,
                 content={"detail": "An internal server error occurred."},
-            )  
+            )     
 
     app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"],allow_credentials= True,)
     app.add_middleware(TrustedHostMiddleware,  allowed_hosts=["centeralisedmiddleware.onrender.com","mpp-gateway-ewpuz.ondigitalocean.app","127.0.0.1", "localhost", "*.yourdomain.com"],)
-    
+
 def admin_only(request: Request):    
     # Get the role from the cookies
     client_ip = request.client.host
@@ -140,4 +141,3 @@ def admin_only(request: Request):
         log_error(client_ip, host, "/get admin", token, "Permission denied")
         raise HTTPException(status_code=403, detail="Permission denied")    
     return True 
-
