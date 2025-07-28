@@ -9,11 +9,17 @@ paris_tz = pytz.timezone('Europe/Paris')
 def paris_time(*args):
     return datetime.now(paris_tz).timetuple()
 
-logs_dir = os.path.join(os.getcwd(), "logs/static", "applogs")
-os.makedirs(logs_dir, exist_ok=True)
-    
-current_time = datetime.now(paris_tz).strftime("%Y-%m-%d_%H-%M-%S")
-log_file_name = os.path.join(logs_dir, f"{current_time}.log")
+IS_PRODUCTION = os.getenv("IS_PRODUCTION", "false").lower() == "true"
+
+if IS_PRODUCTION:
+    os.makedirs("/tmp/logs", exist_ok=True)
+    log_file_name = "/tmp/logs/app.log"
+else:
+    logs_dir = os.path.join(os.getcwd(), "logs/static", "applogs")
+    os.makedirs(logs_dir, exist_ok=True)
+    current_time = datetime.now(paris_tz).strftime("%Y-%m-%d_%H-%M-%S")
+    log_file_name = os.path.join(logs_dir, f"{current_time}.log")
+
 
 log_formatter = logging.Formatter(
     "%(log_type)s: %(asctime)s - IP: %(client_ip)s - Domain: %(host)s - URL: %(url)s - Token: %(token)s - LogMessage: %(log_message)s"

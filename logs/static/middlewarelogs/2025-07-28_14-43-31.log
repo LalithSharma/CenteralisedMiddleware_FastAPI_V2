@@ -1,0 +1,6 @@
+INCOMING: 2025-07-28 14:44:10,853 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: http://127.0.0.1:8000/APIGateway - Token: none - Method: GET - LogMessage: Incoming request received
+OUTGOING: 2025-07-28 14:44:10,859 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: http://127.0.0.1:8000/APIGateway - Token: none - Method: GET - LogMessage: Outgoing response sent
+INCOMING: 2025-07-28 14:44:11,197 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: http://127.0.0.1:8000/APIGatewaySchema - Token: none - Method: GET - LogMessage: Incoming request received
+OUTGOING: 2025-07-28 14:44:11,236 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: http://127.0.0.1:8000/APIGatewaySchema - Token: none - Method: GET - LogMessage: Outgoing response sent
+INCOMING: 2025-07-28 14:44:28,230 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: http://127.0.0.1:8000/auth/login - Token: none - Method: POST - LogMessage: Incoming request received
+OUTGOING: 2025-07-28 14:44:28,573 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: http://127.0.0.1:8000/auth/login - Token: none - Method: POST - LogMessage: Outgoing response sent

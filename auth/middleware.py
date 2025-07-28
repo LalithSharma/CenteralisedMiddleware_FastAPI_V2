@@ -17,13 +17,17 @@ logger.disabled = False
 paris_tz = pytz.timezone('Europe/Paris')
 def paris_time(*args):
     return datetime.now(paris_tz).timetuple()
+IS_PRODUCTION = os.getenv("IS_PRODUCTION", "false").lower() == "true"
 
 def ApiGateway_Middleware(app:FastAPI):
-    Middle_logs_dir = os.path.join(os.getcwd(), "logs/static", "middlewarelogs")
-    os.makedirs(Middle_logs_dir, exist_ok=True)
+    if IS_PRODUCTION:
+        logs_dir = "/tmp/logs/middlewarelogs"
+    else:
+        logs_dir = os.path.join(os.getcwd(), "logs/static/middlewarelogs")
     
-    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    Middlelog_file_name = os.path.join(Middle_logs_dir, f"{current_time}.log")
+    os.makedirs(logs_dir, exist_ok=True)    
+    current_time = datetime.now(paris_tz).strftime("%Y-%m-%d_%H-%M-%S")
+    Middlelog_file_name = os.path.join(logs_dir, f"{current_time}.log")
     
     log_formatter = logging.Formatter(
         "%(log_type)s: %(asctime)s - IP: %(client_ip)s - Domain: %(host)s - URL: %(url)s - Token: %(token)s - Method: %(method)s - LogMessage: %(log_message)s"
