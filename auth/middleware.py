@@ -1,4 +1,3 @@
-import asyncio
 from datetime import datetime
 import logging
 from logging.handlers import RotatingFileHandler
@@ -6,16 +5,18 @@ import os
 import time
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
-#from sqlalchemy import select
+import pytz
 from auth.dependencies import validate_token
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-#from auth.routes import get_blocklist
-
 from logger import log_error, log_info
 
 logger = logging.getLogger('uvicorn.access')
 logger.disabled = False
+
+paris_tz = pytz.timezone('Europe/Paris')
+def paris_time(*args):
+    return datetime.now(paris_tz).timetuple()
 
 def ApiGateway_Middleware(app:FastAPI):
     Middle_logs_dir = os.path.join(os.getcwd(), "logs/static", "middlewarelogs")
@@ -25,8 +26,9 @@ def ApiGateway_Middleware(app:FastAPI):
     Middlelog_file_name = os.path.join(Middle_logs_dir, f"{current_time}.log")
     
     log_formatter = logging.Formatter(
-        "%(log_type): %(asctime) - IP: %(client_ip) - Domain: %(host)s - URL: %(url)s - Token: %(token)s - Method: %(method)s - LogMessage: %(log_message)s"
+        "%(log_type)s: %(asctime)s - IP: %(client_ip)s - Domain: %(host)s - URL: %(url)s - Token: %(token)s - Method: %(method)s - LogMessage: %(log_message)s"
     )
+    log_formatter.converter = paris_time
     log_handler = RotatingFileHandler(
         Middlelog_file_name, maxBytes=10 * 1024 * 1024, backupCount=5
     )
@@ -50,24 +52,6 @@ def ApiGateway_Middleware(app:FastAPI):
             return JSONResponse(status_code=401, content={"detail": "Not authenticated"})
         url = str(request.url)
         method = request.method
-
-        # query_ip = select(BlocklistEntry).where(
-        #         (BlocklistEntry.c.type == BlockTypeEnum.ip)
-        #         & (BlocklistEntry.c.value == client_ip)
-        #     )
-        
-        # blocked_ip = await db.fetch_one(query_ip)
-        # if blocked_ip:
-        #     return JSONResponse(status_code=403, content={"detail": "Access denied: IP blocked."})
-
-        # # --- Check if domain is blocked ---
-        # query_domain = select(BlocklistEntry).where(
-        #     (BlocklistEntry.c.type == BlockTypeEnum.domain)
-        #     & (BlocklistEntry.c.value == domain)
-        # )
-        # blocked_domain = await get_blocklist(query_domain)
-        # if blocked_domain:
-        #     return JSONResponse(status_code=403, content={"detail": "Access denied: Domain blocked."})
 
         incoming_log_data = {
             "log_type": "INCOMING",
