@@ -1,0 +1,12 @@
+INCOMING: 2025-07-28 14:58:44,563 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: http://127.0.0.1:8000/ - Token: none - Method: GET - LogMessage: Incoming request received
+OUTGOING: 2025-07-28 14:58:44,569 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: http://127.0.0.1:8000/ - Token: none - Method: GET - LogMessage: Outgoing response sent
+INCOMING: 2025-07-28 14:58:44,610 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: http://127.0.0.1:8000/login - Token: none - Method: GET - LogMessage: Incoming request received
+OUTGOING: 2025-07-28 14:58:44,624 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: http://127.0.0.1:8000/login - Token: none - Method: GET - LogMessage: Outgoing response sent
+INCOMING: 2025-07-28 14:58:45,312 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: http://127.0.0.1:8000/favicon.ico - Token: none - Method: GET - LogMessage: Incoming request received
+OUTGOING: 2025-07-28 14:58:45,312 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: http://127.0.0.1:8000/favicon.ico - Token: none - Method: GET - LogMessage: Outgoing response sent
+INCOMING: 2025-07-28 14:58:51,152 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: http://127.0.0.1:8000/login - Token: none - Method: POST - LogMessage: Incoming request received
+OUTGOING: 2025-07-28 14:58:51,395 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: http://127.0.0.1:8000/login - Token: none - Method: POST - LogMessage: Outgoing response sent
+INCOMING: 2025-07-28 14:58:51,408 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: http://127.0.0.1:8000/APIGateway - Token: none - Method: GET - LogMessage: Incoming request received
+OUTGOING: 2025-07-28 14:58:51,408 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: http://127.0.0.1:8000/APIGateway - Token: none - Method: GET - LogMessage: Outgoing response sent
+INCOMING: 2025-07-28 14:58:51,696 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: http://127.0.0.1:8000/APIGatewaySchema - Token: none - Method: GET - LogMessage: Incoming request received
+OUTGOING: 2025-07-28 14:58:51,770 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: http://127.0.0.1:8000/APIGatewaySchema - Token: none - Method: GET - LogMessage: Outgoing response sent
