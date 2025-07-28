@@ -1,4 +1,0 @@
-Info: 2025-07-28 14:58:51,372 - IP: unknown - Domain: unknown - URL: /get_user_role - Token: none - LogMessage: Fetching roles for user_id: 1
-Info: 2025-07-28 14:58:51,388 - IP: unknown - Domain: unknown - URL: /get_user_role - Token: none - LogMessage: Roles fetched: ['admin', 'partner']
-Info: 2025-07-28 14:58:51,388 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: /Login - Token: none - LogMessage: Logged Role!
-Info: 2025-07-28 14:58:51,388 - IP: 127.0.0.1 - Domain: 127.0.0.1:8000 - URL: /Login - Token: none - LogMessage: Logged token validated!

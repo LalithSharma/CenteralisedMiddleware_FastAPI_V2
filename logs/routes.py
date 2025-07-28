@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 from fastapi import APIRouter, HTTPException
 from pathlib import Path
 from fastapi.responses import JSONResponse, PlainTextResponse
@@ -6,18 +7,31 @@ from auth.schemas import LogFilesResponse
 
 router = APIRouter()
 
-BASE_LOG_DIR = (Path(__file__).parent / "static").resolve()
-ALLOWED_DIRS = {"applogs", "middlewarelogs"}
+# BASE_LOG_DIR = (Path(__file__).parent / "static").resolve()
+# ALLOWED_DIRS = {"applogs", "middlewarelogs"}
+IS_PRODUCTION = os.getenv("IS_PRODUCTION", "false").lower() == "true"
+
+if IS_PRODUCTION:
+    BASE_LOG_DIR = Path("/tmp/logs").resolve()
+    ALLOWED_DIRS = {""}
+else:
+    BASE_LOG_DIR = (Path(__file__).parent / "static").resolve()
+    ALLOWED_DIRS = {"applogs", "middlewarelogs"}
 
 @router.get("/{log_type}/{filename}", response_class=PlainTextResponse)
 async def read_log_file(log_type: str, filename: str):
-    if log_type not in ALLOWED_DIRS:
-        raise HTTPException(status_code=400, detail="Invalid log type")
+    if IS_PRODUCTION:
+        if log_type != "":
+            raise HTTPException(status_code=400, detail="Invalid log type")
+        log_path = (BASE_LOG_DIR / filename).resolve()
+        
+    else:
+        if log_type not in ALLOWED_DIRS:
+            raise HTTPException(status_code=400, detail="Invalid log type")
 
-    if any(char in filename for char in ["/", "\\", ".."]):
-        raise HTTPException(status_code=400, detail="Invalid filename")
-
-    log_path = (BASE_LOG_DIR / log_type / filename).resolve()
+        if any(char in filename for char in ["/", "\\", ".."]):
+            raise HTTPException(status_code=400, detail="Invalid filename")
+        log_path = (BASE_LOG_DIR / log_type / filename).resolve()
 
     if not str(log_path).startswith(str(BASE_LOG_DIR)):
         raise HTTPException(status_code=400, detail="Invalid path")
@@ -33,12 +47,16 @@ async def read_log_file(log_type: str, filename: str):
 
 @router.get("/{log_type}", response_model=LogFilesResponse)
 async def list_log_files(log_type: str):
-    
-    if log_type not in ALLOWED_DIRS:
-        raise HTTPException(status_code=400, detail="Invalid log type")
-
-    log_folder = (BASE_LOG_DIR / log_type).resolve()
-    print("getting log folder location", log_folder)
+    if IS_PRODUCTION:
+        if log_type != "":
+            raise HTTPException(status_code=400, detail="Invalid log type")
+        log_folder = BASE_LOG_DIR
+        
+    else:
+        if log_type not in ALLOWED_DIRS:
+            raise HTTPException(status_code=400, detail="Invalid log type")
+        log_folder = (BASE_LOG_DIR / log_type).resolve()
+        print("getting log folder location", log_folder)
 
     if not str(log_folder).startswith(str(BASE_LOG_DIR)):
         raise HTTPException(status_code=400, detail="Invalid path")

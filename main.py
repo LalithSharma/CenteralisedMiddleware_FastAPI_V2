@@ -1,7 +1,7 @@
 import asyncio
 import os
 from fastapi import Depends, FastAPI, Form, HTTPException, Request
-from fastapi.responses import RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse
 # from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import httpx
@@ -68,6 +68,10 @@ app.include_router(api_router, prefix="/{channel}", tags=["api Urls"])
 def read_root():
     #return {"message": "Welcome to Centeralized getway to Web API access..!"}
     return RedirectResponse("/login", status_code=302)
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return FileResponse("static/favicon.ico")
 
 @app.get("/APIGateway")
 async def secure_docs(request: Request):

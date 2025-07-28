@@ -9,7 +9,6 @@ from users.models import BlocklistEntry
 class IPBlockMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         client_ip = request.headers.get("X-Forwarded-For") or request.client.host
-        print("blocking method starts ip")
         db = SessionLocal()
         try:
             blocked_ips = (
@@ -19,7 +18,6 @@ class IPBlockMiddleware(BaseHTTPMiddleware):
                 .all()
             )
             blocked_ip_list = [ip[0] for ip in blocked_ips if ip[0]]
-            print("list of ip block here", blocked_ip_list)
 
             if client_ip in blocked_ip_list:
                 return Response("Access Denied: IP blocked", status_code=HTTP_403_FORBIDDEN)
