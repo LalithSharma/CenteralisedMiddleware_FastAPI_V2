@@ -1,17 +1,16 @@
 from datetime import datetime
-from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import Select
 from sqlalchemy.orm import Session
-
+from sqlalchemy.exc import SQLAlchemyError
 from DLL.schemas import ShowBlockedResponse
 from auth.middleware import admin_only
 from logger import log_error, log_info
 from .dependencies import get_channel_by_name, get_db, authenticate_user, create_access_token, get_user, get_user_channel, get_user_role
 from .models import Token
 from .schemas import BlockRequest, UserCreate, UserResponse
-from users.models import BlocklistEntry, Channel, Role, User, UserAPI, UserChannel, UserRole
+from users.models import BlocklistEntry, Role, User, UserAPI, UserChannel, UserRole
 from .utils import get_password_hash
 
 router = APIRouter()
@@ -138,7 +137,23 @@ async def get_blocklist(db: Session = Depends(get_db)):
         print("Error fetching block list:", e)
         raise HTTPException(status_code=500, detail="Internal server error")
     
-    
-# async def get_blocklist(query: Select, db: Session = Depends(get_db)) -> Optional[dict]:
-#     result = db.execute(query).fetchone()
-#     return dict(result._mapping) if result else None
+@router.delete("/remove/{id}")
+def deleteBlockList(id: int, db: Session =Depends(get_db)):
+    try:
+        print("deleteing stars")
+        blocklist = db.query(BlocklistEntry).filter(BlocklistEntry.id == id).first()
+        print("printing delete items", blocklist)
+        if not blocklist:
+            raise HTTPException(status_code=404, detail="Blocked IP or Domain not found")
+
+        db.delete(blocklist)
+        db.commit()
+
+        return {"message": f"BlockList with ID {id} deleted successfully"}
+
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Database error occurred.")
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
